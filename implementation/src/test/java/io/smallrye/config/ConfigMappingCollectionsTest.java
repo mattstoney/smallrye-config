@@ -20,6 +20,25 @@ import io.smallrye.config.ConfigMappingCollectionsTest.ServerCollectionsSet.Envi
 import io.smallrye.config.ConfigMappingCollectionsTest.ServerCollectionsSet.Environment.App;
 
 public class ConfigMappingCollectionsTest {
+
+    @ConfigMapping(prefix = "environments")
+    List<String> environments;
+
+    @Test
+    void rootCollection() {
+        SmallRyeConfig config = new SmallRyeConfigBuilder()
+                .withSources(config("environments[0]", "dev",
+                        "environments[1]", "qa",
+                        "environments[2]", "prod"))
+                .build();
+
+        List<String> environments = config.getValues("environments", String.class);
+        assertEquals(3, environments.size());
+        assertEquals("dev", environments.get(0));
+        assertEquals("qa", environments.get(1));
+        assertEquals("prod", environments.get(2));
+    }
+
     @ConfigMapping(prefix = "server")
     public interface ServerCollectionSimple {
         List<String> environments();
